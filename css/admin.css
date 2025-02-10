@@ -13,7 +13,6 @@
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
-    height: 100vh;
     position: relative;
     box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -709,7 +708,21 @@
         grid-template-columns: 1fr;
     }
     .sidebar {
-        display: none;
+        position: relative;
+        width: 100%;
+        box-shadow: none;
+    }
+    .main-content {
+        padding: 1rem;
+    }
+    .stats-panel {
+        grid-template-columns: 1fr;
+    }
+    .stat-card {
+        margin-bottom: 1rem;
+    }
+    .map-container {
+        height: 300px;
     }
 }
 
