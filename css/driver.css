@@ -1,0 +1,446 @@
+/* Driver Dashboard Layout */
+.driver-container {
+    min-height: 100vh;
+    background-color: var(--light-bg);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Header Styles */
+.driver-header {
+    background: var(--dark-bg);
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-md);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo .material-icons {
+    font-size: 2rem;
+    color: var(--primary-color);
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.driver-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 1.2rem;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.driver-info:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.info-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.subtitle {
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.7);
+}
+
+/* Main Content */
+.driver-main {
+    flex: 1;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 300px 1fr 250px;
+    gap: 2rem;
+    height: calc(100vh - 80px);
+}
+
+/* Status Panel */
+.status-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.status-card, .stats-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+    transition: transform 0.3s ease;
+}
+
+.status-card:hover, .stats-card:hover {
+    transform: translateY(-2px);
+}
+
+.status-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.status-header h2 {
+    font-size: 1.1rem;
+    white-space: nowrap;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    transition: all 0.3s ease;
+    min-width: 90px;
+    justify-content: center;
+}
+
+.status-indicator .material-icons {
+    font-size: 1rem;
+}
+
+.status-indicator.online {
+    background: rgba(76, 175, 80, 0.1);
+    color: var(--secondary-color);
+}
+
+.status-indicator.offline {
+    background: rgba(244, 67, 54, 0.1);
+    color: var(--danger-color);
+}
+
+/* Bus Selection */
+.bus-selection {
+    margin-bottom: 1.5rem;
+}
+
+.bus-selection select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-top: 0.5rem;
+    background: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.bus-selection select:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
+}
+
+/* Control Buttons */
+.control-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.control-buttons button {
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.control-buttons button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.primary-btn {
+    background: var(--primary-color);
+    color: white;
+}
+
+.primary-btn:hover:not(:disabled) {
+    background: #1557b0;
+}
+
+.danger-btn {
+    background: var(--danger-color);
+    color: white;
+}
+
+.danger-btn:hover:not(:disabled) {
+    background: #d32f2f;
+}
+
+.warning-btn {
+    background: var(--warning-color);
+    color: white;
+}
+
+.warning-btn:hover:not(:disabled) {
+    background: #f57c00;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+}
+
+.stat-item {
+    background: var(--light-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.stat-item .material-icons {
+    color: var(--primary-color);
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-info label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Map Container */
+.map-container {
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.map-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    z-index: 2;
+}
+
+#map {
+    flex: 1;
+    width: 100%;
+    min-height: 400px;
+    z-index: 1;
+}
+
+/* Map Controls */
+.map-controls {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.map-control-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 8px;
+    background: var(--light-bg);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.map-control-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Map Popup Styles */
+.leaflet-popup-content-wrapper {
+    border-radius: 8px;
+    padding: 0;
+}
+
+.leaflet-popup-content {
+    margin: 0;
+    padding: 1rem;
+}
+
+.popup-content {
+    min-width: 200px;
+}
+
+.popup-content h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.popup-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.popup-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.popup-info-item .material-icons {
+    font-size: 1rem;
+    color: var(--primary-color);
+}
+
+/* Stops Panel */
+.stops-panel {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.stops-panel h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.stops-list {
+    overflow-y: auto;
+    max-height: calc(100% - 50px);
+}
+
+.stop-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.stop-item.completed {
+    opacity: 0.6;
+}
+
+.stop-time {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+/* Notification Toast */
+.notification-toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: white;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    transform: translateY(150%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+}
+
+.notification-toast.show {
+    transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .driver-main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+    }
+
+    .status-panel {
+        flex-direction: row;
+    }
+
+    .status-card, .stats-card {
+        flex: 1;
+    }
+
+    .stops-panel {
+        max-height: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .driver-main {
+        padding: 1rem;
+    }
+
+    .status-panel {
+        flex-direction: column;
+    }
+
+    .driver-header {
+        padding: 1rem;
+    }
+
+    .logo h1 {
+        display: none;
+    }
+}
+
+/* Leaflet Map Overrides */
+.leaflet-container {
+    width: 100%;
+    height: 100%;
+}
+
+.leaflet-control-zoom {
+    border: none !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+    background: white !important;
+    color: var(--text-primary) !important;
+}
+
+.leaflet-control-zoom-in:hover,
+.leaflet-control-zoom-out:hover {
+    background: var(--primary-color) !important;
+    color: white !important;
+} 

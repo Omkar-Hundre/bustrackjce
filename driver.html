@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Dashboard - College Bus Tracker</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/driver.css">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <style>
+        /* Loading Animation Styles */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 200px;
+        }
+
+        .bus-loader {
+            width: 100px;
+            height: 60px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .bus-loader .material-icons {
+            font-size: 2rem;
+            color: var(--primary-color);
+            position: absolute;
+            animation: driveBus 2s infinite ease-in-out;
+        }
+
+        .road {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--border-color);
+            overflow: hidden;
+        }
+
+        .road::after {
+            content: '';
+            position: absolute;
+            height: 100%;
+            width: 60px;
+            background: var(--primary-color);
+            animation: moveRoad 1.5s linear infinite;
+            opacity: 0.5;
+        }
+
+        @keyframes driveBus {
+            0%, 100% { left: 0; transform: translateY(0); }
+            25% { transform: translateY(-5px); }
+            50% { left: calc(100% - 32px); transform: translateY(0); }
+            75% { transform: translateY(-5px); }
+        }
+
+        @keyframes moveRoad {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(200%); }
+        }
+
+        .loading-content p {
+            margin-top: 1.5rem;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .loading.hidden {
+            display: none;
+        }
+
+        /* Initial state of driver container */
+        .driver-container {
+            display: none;
+        }
+
+        /* Notification Toast */
+        .notification-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transform: translateY(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification-toast.show {
+            transform: translateY(0);
+        }
+
+        .notification-toast.info { background: var(--primary-color); color: white; }
+        .notification-toast.error { background: var(--danger-color); color: white; }
+        .notification-toast.success { background: var(--secondary-color); color: white; }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading" class="loading">
+        <div class="loading-content">
+            <div class="bus-loader">
+                <div class="road"></div>
+                <span class="material-icons">directions_bus</span>
+            </div>
+            <p>Loading dashboard...</p>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="driver-container">
+        <!-- Header -->
+        <header class="driver-header">
+            <div class="logo">
+                <span class="material-icons">directions_bus</span>
+                <h1>Bus Tracker</h1>
+            </div>
+            <div class="driver-info">
+                <span class="material-icons">account_circle</span>
+                <div class="info-text">
+                    <span id="driver-name">Driver Name</span>
+                    <span class="subtitle" id="bus-number">Bus Number</span>
+                </div>
+                <button id="logout-btn" class="icon-btn">
+                    <span class="material-icons">logout</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="driver-main">
+            <!-- Status Panel -->
+            <div class="status-panel">
+                <div class="status-card">
+                    <div class="status-header">
+                        <h2>Bus Status</h2>
+                        <div id="online-status" class="status-indicator offline">
+                            <span class="material-icons">circle</span>
+                            <span>Offline</span>
+                        </div>
+                    </div>
+                    <div class="control-buttons">
+                        <button id="start-btn" class="primary-btn">
+                            <span class="material-icons">play_arrow</span>
+                            Start Trip
+                        </button>
+                        <button id="stop-btn" class="danger-btn" disabled>
+                            <span class="material-icons">stop</span>
+                            End Trip
+                        </button>
+                        <button id="toggle-full-btn" class="warning-btn" disabled>
+                            <span class="material-icons">airline_seat_recline_normal</span>
+                            Toggle Full Status
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <h2>Trip Stats</h2>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="material-icons">speed</span>
+                            <div class="stat-info">
+                                <span id="current-speed">0 km/h</span>
+                                <label>Current Speed</label>
+                            </div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="material-icons">schedule</span>
+                            <div class="stat-info">
+                                <span id="trip-time">00:00</span>
+                                <label>Trip Time</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Container -->
+            <div class="map-container">
+                <div class="map-header">
+                    <div class="map-title">
+                        <span class="material-icons">map</span>
+                        <h2>Live Location</h2>
+                    </div>
+                    <div class="map-controls">
+                        <button id="center-map" class="map-control-btn" title="Center Map">
+                            <span class="material-icons">center_focus_strong</span>
+                        </button>
+                        <button id="refresh-map" class="map-control-btn" title="Refresh Map">
+                            <span class="material-icons">refresh</span>
+                        </button>
+                        <button id="toggle-satellite" class="map-control-btn" title="Toggle Satellite View">
+                            <span class="material-icons">satellite</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="map"></div>
+            </div>
+
+            <!-- Stops Panel -->
+            <div class="stops-panel">
+                <h2>
+                    <span class="material-icons">place</span>
+                    Bus Stops
+                </h2>
+                <div class="stops-list" id="stops-list">
+                    <!-- Stops will be dynamically added here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification-toast">
+        <span class="material-icons">info</span>
+        <span id="notification-message"></span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="js/config/firebase-config.js"></script>
+    <script type="module" src="js/driverMap.js"></script>
+    <script type="module" src="js/driver.js"></script>
+</body>
+</html> 

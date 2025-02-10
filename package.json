@@ -1,0 +1,24 @@
+{
+  "name": "college-bus-tracker",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "live-server --port=3000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "firebase": "^10.8.0",
+    "leaflet": "^1.9.4"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - College Bus Tracker</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/student.css">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Add styles in the head section -->
+    <style>
+        .bus-full {
+            background: rgba(244, 67, 54, 0.1);
+            color: var(--danger-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .bus-full::before {
+            content: "warning";
+            font-family: 'Material Icons';
+            font-size: 1rem;
+        }
+
+        .info-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .info-legend {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-dot.online {
+            background: var(--secondary-color);
+        }
+
+        .status-dot.offline {
+            background: var(--danger-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading" class="loading">
+        <div class="loading-content">
+            <div class="bus-loader">
+                <div class="road"></div>
+                <span class="material-icons">directions_bus</span>
+            </div>
+            <p>Loading buses...</p>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div class="student-container">
+        <!-- Header -->
+        <header class="student-header">
+            <div class="logo">
+                <span class="material-icons">directions_bus</span>
+                <h1>College Bus Tracker</h1>
+            </div>
+            <div class="header-actions">
+                <div class="refresh-btn" id="refresh-dashboard">
+                    <span class="material-icons">refresh</span>
+                    <span>Refresh</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="student-main">
+            <!-- Bus List Panel -->
+            <div class="bus-panel">
+                <div class="panel-header">
+                    <h2>
+                        <span class="material-icons">directions_bus</span>
+                        Available Buses
+                    </h2>
+                    <div class="filter-controls">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="online">Online</button>
+                        <button class="filter-btn" data-filter="offline">Offline</button>
+                    </div>
+                </div>
+                <div class="bus-list" id="bus-list">
+                    <!-- Buses will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Map Container -->
+            <div class="map-container">
+                <div class="map-header">
+                    <div class="map-title">
+                        <span class="material-icons">map</span>
+                        <h2>Live Tracking</h2>
+                    </div>
+                    <div class="map-controls">
+                        <button id="center-map" class="map-control-btn" title="Center Map">
+                            <span class="material-icons">center_focus_strong</span>
+                        </button>
+                        <button id="refresh-map" class="map-control-btn" title="Refresh Map">
+                            <span class="material-icons">refresh</span>
+                        </button>
+                        <button id="toggle-satellite" class="map-control-btn" title="Toggle Satellite View">
+                            <span class="material-icons">satellite</span>
+                        </button>
+                    </div>
+                </div>
+                <div id="map"></div>
+                <div class="map-legend">
+                    <div class="legend-item">
+                        <div class="legend-marker college"></div>
+                        <span>College</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-marker bus-online"></div>
+                        <span>Bus (Online)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-marker bus-offline"></div>
+                        <span>Bus (Offline)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bus Info Panel -->
+            <div class="info-panel">
+                <div class="panel-header">
+                    <h2>
+                        <span class="material-icons">info</span>
+                        Bus Information
+                    </h2>
+                </div>
+                <div class="bus-info" id="bus-info">
+                    <div class="info-placeholder">
+                        <span class="material-icons">touch_app</span>
+                        <p>Select a bus to view details</p>
+                    </div>
+                </div>
+                <div class="info-footer">
+                    <div class="info-legend">
+                        <div class="legend-item">
+                            <span class="status-dot online"></span>
+                            <span>Online</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="status-dot offline"></span>
+                            <span>Offline</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="notification" class="notification-toast">
+        <span class="material-icons">info</span>
+        <span id="notification-message"></span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module" src="js/config/firebase-config.js"></script>
+    <script type="module" src="js/student.js"></script>
+</body>
+</html> 

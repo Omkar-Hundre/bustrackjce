@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - College Bus Tracker</title>
+    
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/admin.css">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        /* Hide body initially until auth check */
+        
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            color: #333;
+        }
+
+        /* Add these styles */
+        .custom-marker {
+            background: none;
+            border: none;
+        }
+
+        .bus-marker {
+            background: white;
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bus-marker.online {
+            border: 2px solid var(--secondary-color);
+        }
+
+        .bus-marker.offline {
+            border: 2px solid var(--danger-color);
+        }
+
+        .bus-popup {
+            padding: 10px;
+        }
+
+        .bus-popup h3 {
+            margin: 0 0 5px 0;
+            color: var(--text-primary);
+        }
+
+        .bus-popup p {
+            margin: 3px 0;
+            color: var(--text-secondary);
+        }
+
+        .bus-popup .warning {
+            color: var(--danger-color);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading">Loading dashboard...</div>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="material-icons">directions_bus</span>
+                    <h2>Bus Tracker</h2>
+                </div>
+                <div class="user-info">
+                    <span class="material-icons">account_circle</span>
+                    <span id="admin-name">Admin</span>
+                    <button id="logout-btn" class="logout-btn">
+                        <span class="material-icons">logout</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="search-box">
+                <span class="material-icons">search</span>
+                <input type="text" placeholder="Search buses...">
+            </div>
+            
+            <nav class="sidebar-nav">
+                <button class="nav-btn active" data-section="dashboard">
+                    <span class="material-icons">dashboard</span>
+                    Dashboard
+                </button>
+                <button class="nav-btn" data-section="buses">
+                    <span class="material-icons">directions_bus</span>
+                    Buses
+                </button>
+                <button class="nav-btn" data-section="drivers">
+                    <span class="material-icons">people</span>
+                    Drivers
+                </button>
+            </nav>
+
+            <div class="bus-list">
+                <!-- Bus items will be dynamically added here -->
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Panel -->
+            <div class="stats-panel">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <span class="material-icons">directions_bus</span>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Total Buses</h3>
+                        <p id="total-buses">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon online">
+                        <span class="material-icons">wifi</span>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Online Buses</h3>
+                        <p id="online-buses">0</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon offline">
+                        <span class="material-icons">wifi_off</span>
+                    </div>
+                    <div class="stat-info">
+                        <h3>Offline Buses</h3>
+                        <p id="offline-buses">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Section -->
+            <div class="content-section" id="dashboard-section">
+                <!-- Map Section -->
+                <div class="map-container">
+                    <div class="map-header">
+                        <h2>Live Tracking</h2>
+                        <div class="map-controls">
+                            <button id="center-map">
+                                <span class="material-icons">center_focus_strong</span>
+                            </button>
+                            <button id="refresh-map">
+                                <span class="material-icons">refresh</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="map"></div>
+                </div>
+            </div>
+
+            <!-- Buses Section -->
+            <div class="content-section hidden" id="buses-section">
+                <div class="section-header">
+                    <h2>Bus Management</h2>
+                    <button class="add-bus-btn" id="add-bus-modal-btn">
+                        <span class="material-icons">add</span>
+                        Add New Bus
+                    </button>
+                </div>
+                
+                <div class="buses-grid">
+                    <!-- Bus cards will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Drivers Section -->
+            <div class="content-section hidden" id="drivers-section">
+                <div class="section-header">
+                    <h2>Driver Management</h2>
+                    <button class="add-driver-btn" id="add-driver-modal-btn">
+                        <span class="material-icons">person_add</span>
+                        Add Driver
+                    </button>
+                </div>
+                
+                <div class="drivers-table-container">
+                    <table class="drivers-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Passcode</th>
+                                <th>Assigned Bus</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="drivers-table-body">
+                            <!-- Driver rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Bus Modal -->
+    <div class="modal" id="add-bus-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Bus</h2>
+                <button class="close-modal">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <form id="add-bus-form">
+                <div class="form-group">
+                    <label for="bus-name">Bus Name/Number</label>
+                    <input type="text" id="bus-name" required placeholder="e.g., Bus 101">
+                </div>
+                <div class="form-group">
+                    <label for="driver-select">Select Driver</label>
+                    <select id="driver-select">
+                        <option value="">Select a driver</option>
+                    </select>
+                </div>
+                <div id="selected-driver-info" class="driver-info-preview">
+                    <!-- Driver info will be shown here when selected -->
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary-btn">Add Bus</button>
+                    <button type="button" class="secondary-btn close-modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Driver Modal -->
+    <div class="modal" id="add-driver-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Driver</h2>
+                <button class="close-modal">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <form id="add-driver-form">
+                <div class="form-group">
+                    <label for="driver-name">Driver Name</label>
+                    <input type="text" id="driver-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="driver-phone">Contact Number</label>
+                    <input type="tel" id="driver-phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="driver-passcode">Login Passcode</label>
+                    <input type="text" id="driver-passcode" required 
+                           pattern="[0-9]{4}" 
+                           maxlength="4" 
+                           title="Please enter a 4-digit passcode">
+                    <small class="form-hint">Enter a 4-digit passcode for driver login</small>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="primary-btn">Add Driver</button>
+                    <button type="button" class="secondary-btn close-modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script type="module">
+        console.log('Loading admin dashboard...');
+        import { authService } from './js/auth.js';
+        import { mapService } from './js/map.js';
+        import './js/admin.js';
+        console.log('Admin dashboard loaded');
+        
+        // Check if body is visible
+        console.log('Body display:', document.body.style.display);
+    </script>
+</body>
+</html> 
